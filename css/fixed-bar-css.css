@@ -1,0 +1,42 @@
+#az-fixed{
+	position:fixed;	
+	z-index:1000000;	
+}
+
+#az-fixed > aside {
+	overflow:hidden;
+}
+
+.az-flex{
+	display:flex;
+}
+
+.az-position-left{
+	left:0;
+	top:0;	
+	height:100%;
+}
+
+.az-position-left > .az-flex, .az-position-right > .az-flex{
+	flex-direction:column;
+}
+
+.az-position-right{
+	top:0;
+	right:0;	
+	height:100%;
+}
+
+.az-position-top{
+	top:0;
+	width:100%;	
+}
+
+.az-position-top > aside, .az-position-bottom > aside{
+	display:inline-flex;
+}
+
+.az-position-bottom{
+	bottom:0;
+	width:100%;	
+}
