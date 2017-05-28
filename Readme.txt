@@ -22,6 +22,11 @@ Also you can specify page IDs, where fixed bar to be on|off state.
 
 == Changelog ==
 
+= 1.1 =
+* Font size setting added.
+* Fixed bar shadow added.
+* JS optimized.
+
 = 1.0 =
 *Release Date - 15 May 2017*
 * Specify page IDs, where fixed bar to be on|off state.

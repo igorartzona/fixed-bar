@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: az-plugin\n"
-"POT-Creation-Date: 2017-05-13 19:05+0300\n"
-"PO-Revision-Date: 2017-05-13 19:05+0300\n"
+"POT-Creation-Date: 2017-05-28 14:37+0300\n"
+"PO-Revision-Date: 2017-05-28 14:39+0300\n"
 "Last-Translator: \n"
 "Language-Team: artzona.org (igor.artzona@gmail.com)\n"
 "Language: ru_RU\n"
@@ -16,47 +16,57 @@ msgstr ""
 "X-Poedit-KeywordsList: _e;__\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: fixed-bar-admin-page.php:20
+#: fixed-bar-admin-page.php:28
 msgid "Fixed bar plugin options"
 msgstr "Настройки плагина fixed-bar"
 
-#: fixed-bar-admin-page.php:25
+#: fixed-bar-admin-page.php:33
 msgid "Bar size"
 msgstr "Размер Fixed bar"
 
-#: fixed-bar-admin-page.php:30
+#: fixed-bar-admin-page.php:38
+msgid "Font size"
+msgstr "Размер шрифта"
+
+#: fixed-bar-admin-page.php:42
+msgid "Set 0 to default (Theme size)"
+msgstr ""
+"Поставьте 0, чтобы использовать размер шрифта, используемый по умолчанию в "
+"вашей теме"
+
+#: fixed-bar-admin-page.php:49
 msgid "Bar position"
 msgstr "Положение Fixed bar"
 
-#: fixed-bar-admin-page.php:55
+#: fixed-bar-admin-page.php:74
 msgid "Bar color"
 msgstr "Цвет Fixed bar"
 
-#: fixed-bar-admin-page.php:62
+#: fixed-bar-admin-page.php:81
 msgid "Visibility"
 msgstr "Видимость"
 
-#: fixed-bar-admin-page.php:66
+#: fixed-bar-admin-page.php:85
 msgid "Page ID (ON)"
 msgstr "Page ID (Включить)"
 
-#: fixed-bar-admin-page.php:72
+#: fixed-bar-admin-page.php:91
 msgid "ON Fixed bar only this pages. Page IDs, separated by commas"
 msgstr ""
 "Включить Fixed bar только на этих страницах. Укажите ID страницы или "
 "несколько, разделив их запятыми"
 
-#: fixed-bar-admin-page.php:79
+#: fixed-bar-admin-page.php:98
 msgid "Page ID (OFF)"
 msgstr "Page ID (Выключить)"
 
-#: fixed-bar-admin-page.php:85
+#: fixed-bar-admin-page.php:104
 msgid "OFF Fixed bar only this pages. Page IDs, separated by commas"
 msgstr ""
 "Выключить Fixed bar только на этих страницах. Укажите ID страницы или "
 "несколько, разделив их запятыми"
 
-#: fixed-bar-admin-page.php:91
+#: fixed-bar-admin-page.php:110
 msgid "Display bar on frontpage"
 msgstr "Показывать Fixed bar на главной"
 

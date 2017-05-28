@@ -5,7 +5,7 @@ Plugin URI: http://artzona.org
 Description: Описание плагина
 Author: jvj
 Author URI: http://artzona.org
-Version: 1.0
+Version: 1.1
 */
 
 /*
@@ -15,10 +15,11 @@ Version: 1.0
 	4. 	Подключение поля выбора цвета
 	5.	Страница настроек плагина		
 	6. 	Ссылка на настройки плагина
-	7. 	Регистрация сайдбара
-	8.	Добавление динамических стилей
-	9.	Обработка POST запросов, добавление динамических стилей и фиксированного блока	
-	10.	Лицензия GPL
+	7. 	Регистрация сайдбара	
+	8.	Обработка POST запросов
+	9. 	Добавление динамических стилей 
+		10.	Добавление фиксированного блока	
+	11.	Лицензия GPL
 */
 
 /**	1.	-------------------------------------------------------------------------**/
@@ -34,7 +35,7 @@ Version: 1.0
 	function fixedbar_activate(){		
 		
 		$size = get_option('az_fixedbar_size');
-		if (!$size) add_option('az_fixedbar_size',48);
+		if (!$size) add_option('az_fixedbar_size',48);		
 		
 		$color = get_option('az_fixedbar_color');
 		if (!$color) add_option('az_fixedbar_color','rgba(127,127,127,0.5)');
@@ -47,6 +48,7 @@ Version: 1.0
 	
 	function fixedbar_uninstall(){
 		delete_option( 'az_fixedbar_size' );
+		delete_option( 'az_fixedbar_fontsize' );
 		delete_option( 'az_fixedbar_position' );
 		delete_option( 'az_fixedbar_color' );
 		delete_option( 'az_fixedbar_pageID_inc' );
@@ -88,7 +90,7 @@ Version: 1.0
 	// регистрируем страницу настроек плагина
 	function register_fixedbar_page(){
 		add_menu_page( 
-			'fixedbar options', 'Fixed bar plugin', 'manage_options', 'fixed-bar/fixed-bar-admin-page.php', '', 'dashicons-layout', 6 
+			'fixedbar options', 'Fixed bar', 'manage_options', 'fixed-bar/fixed-bar-admin-page.php', '', 'dashicons-layout', 6 
 		);
 	}
 	add_action( 'admin_menu', 'register_fixedbar_page' );
@@ -130,6 +132,7 @@ Version: 1.0
 	//Обработка POST запросов
 	if($_SERVER['REQUEST_METHOD'] == 'POST'){
 		$size = intval($_POST['size']);
+		$fontsize = intval($_POST['fontsize']);
 		$color = sanitize_text_field ($_POST['color']);
 		$position = sanitize_text_field ($_POST['position']);
 		$pageID_inc = sanitize_text_field ($_POST['pageID_inc']);
@@ -139,6 +142,10 @@ Version: 1.0
 		if ($size) {
 			update_option('az_fixedbar_size',$size);
 		} else $size = get_option('az_fixedbar_size');
+		
+		
+		update_option('az_fixedbar_fontsize',$fontsize);
+		
 		
 		if ($color) {
 			update_option('az_fixedbar_color',$color);
@@ -163,6 +170,7 @@ Version: 1.0
 		
 		function add_fixed_style ($fixedbar_update_css){	
 			$size = get_option('az_fixedbar_size');
+			$fontsize = get_option('az_fixedbar_fontsize');
 			$color = get_option('az_fixedbar_color');
 			$position = get_option('az_fixedbar_position');
 					
@@ -175,17 +183,28 @@ Version: 1.0
 					}
 					#az-fixed{
 						background:".$color.";
-					}
-				";					
+					}					
+				";
+
+				if ($fontsize){
+					$fixedbar_update_css .= "
+						#az-fixed .widget {
+						font-size: ".$fontsize."px;
+						}
+					";
+				}
+				
 			wp_add_inline_style( 'fixed-bar-css', $fixedbar_update_css );
 			
 			/**	10.	-------------------------------------------------------------------------**/
 				// добавляем фиксированный блок в подвал
 				function az_add_fixedbar_to_footer() {	
 					$position = get_option('az_fixedbar_position');
-					echo '<div id="az-fixed" class="az-position-'.$position.'"><div class="az-flex">';			
-						dynamic_sidebar('sidebar-fixed');
-					echo '</div></div>';
+					echo '<div id="az-fixed" class="az-position-'.$position.'">
+						  <div id="az-flex" class="az-flex-'.$position.'">';		
+								dynamic_sidebar('sidebar-fixed');
+					echo '</div>
+						  </div>';
 				}	
 				add_action("wp_footer", "az_add_fixedbar_to_footer", 1);
 			/**-------------------------------------------------------------------------**/ 

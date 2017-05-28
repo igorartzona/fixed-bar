@@ -1,5 +1,6 @@
 <?php 
-		$size = get_option('az_fixedbar_size');			 
+		$size = get_option('az_fixedbar_size');
+		$fontsize = get_option('az_fixedbar_fontsize');			
 		$color = get_option('az_fixedbar_color');
 		$position = get_option('az_fixedbar_position');
 		$pageID_inc = get_option('az_fixedbar_pageID_inc');
@@ -17,8 +18,9 @@
 ?>
 
 <style>
-#position-table input:checked{
-	font-weight:bold;
+#th_ID_inc, #th_ID_ex {
+    border-left: 4px double gray;
+    padding-left: 1em;
 }
 </style>
 
@@ -31,6 +33,17 @@
 				<th scope="row"><label for="size"><?php _e('Bar size','fixed-bar'); ?> :</label></th>
 				<td> <input type="text" name="size" value="<?=$size?>">px </td>
 			</tr>
+			
+			<tr>
+				<th scope="row"><label for="fontsize"><?php _e('Font size','fixed-bar'); ?> :</label></th>
+				<td> 
+					<input type="text" name="fontsize" value="<?=$fontsize?>">px 
+					<p class="description">
+							<?php _e('Set 0 to default (Theme size)','fixed-bar'); ?>
+					</p>
+				</td>
+			</tr>
+			
 			
 			<tr>
 				<th scope="row" style="vertical-align:middle;"><label for="position"><?php _e('Bar position','fixed-bar'); ?> :</label></th>
@@ -68,7 +81,7 @@
 		<h2 class="title"><?php _e('Visibility','fixed-bar');?></h2><hr>
 			<table class="form-table">	
 				<tr>
-					<th scope="row">
+					<th scope="row" id="th_ID_inc">
 						<label for="pageID_inc"><?php _e('Page ID (ON)','fixed-bar'); ?> :</label>					
 					</th>
 										
@@ -81,7 +94,7 @@
 				</tr>
 				
 				<tr>
-					<th scope="row">
+					<th scope="row" id="th_ID_ex">
 						<label for="pageID_ex"><?php _e('Page ID (OFF)','fixed-bar'); ?> :</label>						
 					</th>
 									
