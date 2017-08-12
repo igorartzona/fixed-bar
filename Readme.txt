@@ -22,6 +22,20 @@ Also you can specify page IDs, where fixed bar to be on|off state.
 
 == Changelog ==
 
+= 2.3 =
+* Responsive tab in admin area added (artzona style)
+* Select fontsize and fixedbar added
+* Mobile version tab
+* Adapt template option added
+* Stretch option added
+* Fixed bar caption added
+* Hide Fixed bar in mobile version option added 
+
+= 2.0 =
+* Overwrite Automattic Iris for enabled Alpha Channel in wpColorPicker 
+	(https://github.com/kallookoo/wp-color-picker-alpha)
+* Open/Close button added
+
 = 1.1 =
 * Font size setting added.
 * Fixed bar shadow added.

@@ -1,11 +1,11 @@
 <?php
 /*
-Plugin Name: fixed-bar
+Plugin Name: Fixed-bar
 Plugin URI: http://artzona.org
-Description: Описание плагина
+Description: Плагин Fixed Bar добавляет настраиваемую фиксированную панель на ваш сайт.  
 Author: jvj
 Author URI: http://artzona.org
-Version: 1.1
+Version: 2.3
 */
 
 /*
@@ -16,10 +16,9 @@ Version: 1.1
 	5.	Страница настроек плагина		
 	6. 	Ссылка на настройки плагина
 	7. 	Регистрация сайдбара	
-	8.	Обработка POST запросов
-	9. 	Добавление динамических стилей 
-		10.	Добавление фиксированного блока	
-	11.	Лицензия GPL
+	8. 	Добавление динамических стилей 
+		9.	Добавление фиксированного блока	
+	10.	Лицензия GPL
 */
 
 /**	1.	-------------------------------------------------------------------------**/
@@ -30,71 +29,124 @@ Version: 1.1
 	add_action( 'plugins_loaded', 'load_fixedbar_languages' );
 /**-------------------------------------------------------------------------**/
 
+
+
 /**	2.	-------------------------------------------------------------------------**/
 	//действия при установке и деинсталляции плагина
 	function fixedbar_activate(){		
+		if ( !get_option('az_fixedbar_size') ) add_option('az_fixedbar_size',48);		
+		if ( !get_option('az_fixedbar_background') ) add_option('az_fixedbar_background','rgba(127,127,127,0.5)');
+		if ( !get_option('az_fixedbar_position') ) add_option('az_fixedbar_position','right');
 		
-		$size = get_option('az_fixedbar_size');
-		if (!$size) add_option('az_fixedbar_size',48);		
+		$open_button_title = __('Open Fixed Bar','fixed-bar');
+		if ( !get_option('az_fixedbar_open_button_title') ) add_option('az_fixedbar_open_button_title',$open_button_title);	
 		
-		$color = get_option('az_fixedbar_color');
-		if (!$color) add_option('az_fixedbar_color','rgba(127,127,127,0.5)');
+		$barcaption = __('Fixed Bar caption','fixed-bar');
+		if ( !get_option('az_fixedbar_barcaption') ) add_option('az_fixedbar_barcaption',$barcaption);
 		
-		$position = get_option('az_fixedbar_position');
-		if (!$position) add_option('az_fixedbar_position','right');	
+		if ( !get_option('az_fixedbar_size_select') ) add_option('az_fixedbar_size','px');
 		
-		add_option('az_fixedbar_frontpage','1');
+		add_option('az_fixedbar_frontpage','on');
+		add_option('az_fixedbar_bodymargin','');
+		add_option('az_fixedbar_mobileview','on');
+		add_option('az_fixedbar_fullwidth','on');		
+		
+		//add_option('az_fixedbar_close_button','')
+		if ( !get_option('az_fixedbar_basis') ) add_option('az_fixedbar_basis','0');
+		if ( !get_option('az_fixedbar_basis_select') ) add_option('az_fixedbar_basis_select','px');
+		
 	}
 	
 	function fixedbar_uninstall(){
 		delete_option( 'az_fixedbar_size' );
 		delete_option( 'az_fixedbar_fontsize' );
 		delete_option( 'az_fixedbar_position' );
-		delete_option( 'az_fixedbar_color' );
+		delete_option( 'az_fixedbar_background' );
 		delete_option( 'az_fixedbar_pageID_inc' );
 		delete_option( 'az_fixedbar_pageID_ex' );
 		delete_option( 'az_fixedbar_frontpage' );
+		delete_option( 'az_fixedbar_close_button' );
+		delete_option( 'az_fixedbar_open_button_title' );
+		delete_option( 'az_fixedbar_bodymargin' );
+		delete_option( 'az_fixedbar_mobileview' );
+		delete_option( 'az_fixedbar_size_select	' );
+		delete_option( 'az_fixedbar_font_select	' );
+		delete_option( 'az_fixedbar_fullwidth' );
+		delete_option( 'az_fixedbar_barcaption' );
+		delete_option( 'az_fixedbar_basis' );
+		delete_option( 'az_fixedbar_basis_select' );
 	}
 
 	register_activation_hook( __FILE__, 'fixedbar_activate' );
 	register_uninstall_hook( __FILE__ , 'fixedbar_uninstall');
 /**-------------------------------------------------------------------------**/
 
+
+
 /**	3.	-------------------------------------------------------------------------**/
-	// регистрируем стили
+	// регистрируем стили и скрипты (фронт-енд)
 	function register_fixedbar_styles() {
 		wp_register_style( 'fixed-bar-css', plugins_url( 'fixed-bar/css/fixed-bar-css.css' ) );
 		wp_enqueue_style( 'fixed-bar-css' );
+		wp_enqueue_script('fixedbar-frontend', plugins_url('fixed-bar/js/frontend.js'), array('jquery') );				
 	}
 	add_action( 'wp_enqueue_scripts', 'register_fixedbar_styles' ); 	
 /**-------------------------------------------------------------------------**/
 
+
+
 /**	4	-------------------------------------------------------------------------**/
-	// Подключение поля выбора цвета
+	// Подключение скриптов админки
 	// https://wp-kama.ru/id_4621/vyibora-tsveta-iris-color-picker-v-wordpress.html
 	// http://automattic.github.io/Iris/
+	// https://github.com/kallookoo/wp-color-picker-alpha
 
-	function add_admin_iris_scripts( $hook ){
-		// подключаем color piker
-		wp_enqueue_script( 'wp-color-picker' );
+	function add_fixedbar_admin_scripts( $hook ){
+		//подключение скриптов админки
+		wp_enqueue_script( 'fixedbar-backend', plugins_url('/js/backend.js',__FILE__) );
+		
+		//подключение прозрачного iris
 		wp_enqueue_style( 'wp-color-picker' );
-
-		// подключаем скрипт color pickera
-		wp_enqueue_script('color-picker-script', plugins_url('js/color-picker.js', __FILE__), array('wp-color-picker'), false, 1 );
+		wp_enqueue_script( 'wp-color-picker-alpha', plugins_url('fixed-bar/js/wp-color-picker-alpha.min.js'), array( 'wp-color-picker' ), '1.2.2', 'in_footer' );
 	}
-	add_action( 'admin_enqueue_scripts', 'add_admin_iris_scripts' );
+	add_action( 'admin_enqueue_scripts', 'add_fixedbar_admin_scripts' );
 /**-------------------------------------------------------------------------**/ 
+
 
 
 /**	5.	-------------------------------------------------------------------------**/
 	// регистрируем страницу настроек плагина
 	function register_fixedbar_page(){
 		add_menu_page( 
-			'fixedbar options', 'Fixed bar', 'manage_options', 'fixed-bar/fixed-bar-admin-page.php', '', 'dashicons-layout', 6 
+			'fixedbar options', 'Fixed bar', 'manage_options', 'fixed-bar/fixed-bar-admin-page.php', '', 'dashicons-layout', 122 
 		);
 	}
 	add_action( 'admin_menu', 'register_fixedbar_page' );
+	
+	
+	function az_fixedbar_settings() {	
+		register_setting( 'az-fixedbar-settings-group', 'az_fixedbar_size' );
+		register_setting( 'az-fixedbar-settings-group', 'az_fixedbar_fontsize' );
+		register_setting( 'az-fixedbar-settings-group', 'az_fixedbar_position' );
+		register_setting( 'az-fixedbar-settings-group', 'az_fixedbar_background' );
+		register_setting( 'az-fixedbar-settings-group', 'az_fixedbar_pageID_inc' );
+		register_setting( 'az-fixedbar-settings-group', 'az_fixedbar_pageID_ex' );
+		register_setting( 'az-fixedbar-settings-group', 'az_fixedbar_frontpage' );
+		register_setting( 'az-fixedbar-settings-group', 'az_fixedbar_open_button_title' );
+		register_setting( 'az-fixedbar-settings-group', 'az_fixedbar_close_button' );
+		register_setting( 'az-fixedbar-settings-group', 'az_fixedbar_bodymargin' );
+		register_setting( 'az-fixedbar-settings-group', 'az_fixedbar_mobileview' );
+		register_setting( 'az-fixedbar-settings-group', 'az_fixedbar_size_select' );
+		register_setting( 'az-fixedbar-settings-group', 'az_fixedbar_font_select' );
+		register_setting( 'az-fixedbar-settings-group', 'az_fixedbar_fullwidth' );
+		register_setting( 'az-fixedbar-settings-group', 'az_fixedbar_barcaption' );
+		register_setting( 'az-fixedbar-settings-group', 'az_fixedbar_basis' );
+		register_setting( 'az-fixedbar-settings-group', 'az_fixedbar_basis_select' );
+	}
+	add_action( 'admin_init', 'az_fixedbar_settings' );
 /**-------------------------------------------------------------------------**/ 
+
+
 
 /**	6.	-------------------------------------------------------------------------**/
 	// добавляем ссылку на настройки плагина
@@ -108,6 +160,8 @@ Version: 1.1
 	}
 	add_filter( 'plugin_action_links_' . plugin_basename(__FILE__), 'add_fixedbar_links' );
 /**-------------------------------------------------------------------------**/ 
+
+
 
 /**	7.	-------------------------------------------------------------------------**/
 	// добавляем сайдбар
@@ -128,42 +182,9 @@ Version: 1.1
 	add_action('init','az_fixedbar');
 /**-------------------------------------------------------------------------**/
 
+
+
 /**	8.	-------------------------------------------------------------------------**/ 
-	//Обработка POST запросов
-	if($_SERVER['REQUEST_METHOD'] == 'POST'){
-		$size = intval($_POST['size']);
-		$fontsize = intval($_POST['fontsize']);
-		$color = sanitize_text_field ($_POST['color']);
-		$position = sanitize_text_field ($_POST['position']);
-		$pageID_inc = sanitize_text_field ($_POST['pageID_inc']);
-		$pageID_ex = sanitize_text_field ($_POST['pageID_ex']);
-		$frontpage = sanitize_text_field ($_POST['frontpage']);
-		
-		if ($size) {
-			update_option('az_fixedbar_size',$size);
-		} else $size = get_option('az_fixedbar_size');
-		
-		
-		update_option('az_fixedbar_fontsize',$fontsize);
-		
-		
-		if ($color) {
-			update_option('az_fixedbar_color',$color);
-		} else $color = get_option('az_fixedbar_color');
-		
-		if ($position) {
-			update_option('az_fixedbar_position',$position);
-		} else $position = get_option('az_fixedbar_position');
-		
-		
-		update_option('az_fixedbar_pageID_inc',$pageID_inc);
-		update_option('az_fixedbar_pageID_ex',$pageID_ex);
-		update_option('az_fixedbar_frontpage',$frontpage);
-			
-
-	}
-
-/**	9.	-------------------------------------------------------------------------**/ 
 	//Добавление динамических стилей
 	
 	function add_select_page (){
@@ -171,40 +192,98 @@ Version: 1.1
 		function add_fixed_style ($fixedbar_update_css){	
 			$size = get_option('az_fixedbar_size');
 			$fontsize = get_option('az_fixedbar_fontsize');
-			$color = get_option('az_fixedbar_color');
+			$background = get_option('az_fixedbar_background');
 			$position = get_option('az_fixedbar_position');
-					
-			if ( $position == 'top' or $position == 'bottom' ) { $blocksize = 'height'; } 
-			elseif ( $position == 'left' or $position == 'right' ) { $blocksize = 'width'; }
-					
+			$bodymargin = get_option('az_fixedbar_bodymargin');
+			$fixedbar_size_select = get_option('az_fixedbar_size_select');
+			$fixedbar_font_select = get_option('az_fixedbar_font_select');
+			$fixedbar_fullwidth = get_option('az_fixedbar_fullwidth');
+			$basis = get_option('az_fixedbar_basis');
+			$basis_select = get_option('az_fixedbar_basis_select');
+			
+			
+			if ( $position == 'top' or $position == 'bottom' ) { 
+				$blocksize = 'height';
+				$fs = 'width';
+			}	elseif ( $position == 'left' or $position == 'right' ) { 
+					$blocksize = 'width'; 
+					$fs = 'height';
+				}
+			
+			if ( $fixedbar_fullwidth == 'on' ) {	$fixedbarfull = $fs.": 100%";	} else $fixedbarfull = '';
+			
 				$fixedbar_update_css = "
 					.az-position-".$position."{
-						".$blocksize.": ".$size."px;
-					}
-					#az-fixed{
-						background:".$color.";
+						".$blocksize.": ".$size.$fixedbar_size_select.";
+						".$fixedbarfull.";						
 					}					
+					#az-fixed{
+						background:".$background.";
+					}
+					#az-open{
+						".$position.": 0;
+					}
 				";
 
 				if ($fontsize){
 					$fixedbar_update_css .= "
 						#az-fixed .widget {
-						font-size: ".$fontsize."px;
+							font-size: ".$fontsize.$fixedbar_font_select.";
 						}
 					";
 				}
 				
+				if ($basis != '0' ){
+					$fixedbar_update_css .= "
+						#az-fixed .widget {
+							flex-basis: ".$basis.$basis_select.";
+						}
+					";
+				}
+				
+				
+				if ($bodymargin){
+					$fixedbar_update_css .= "
+						body {
+							margin-".$position.": ".$size.$fixedbar_size_select." !important;
+						}
+					";
+				}
+				
+				$mobileview = get_option('az_fixedbar_mobileview');
+				if ( $mobileview == 'on' ){
+					$fixedbar_update_css .= "
+						@media only screen and (max-device-width: 1024px){
+							#az-fixed {
+								display:none;
+							}
+						}
+					";
+				}
+				
+				
 			wp_add_inline_style( 'fixed-bar-css', $fixedbar_update_css );
 			
-			/**	10.	-------------------------------------------------------------------------**/
+			/**	9.	-------------------------------------------------------------------------**/
 				// добавляем фиксированный блок в подвал
 				function az_add_fixedbar_to_footer() {	
 					$position = get_option('az_fixedbar_position');
-					echo '<div id="az-fixed" class="az-position-'.$position.'">
-						  <div id="az-flex" class="az-flex-'.$position.'">';		
+					$barcaption = get_option('az_fixedbar_barcaption');
+					echo '<div id="az-fixed" class="az-position-'.$position.'">';
+						if ( get_option('az_fixedbar_close_button')=='on' ){
+							echo '
+							<div id="fixedbar-caption-wrap">
+								<div id="fixedbar-caption">'.$barcaption.'</div>
+								<button id="az-closed" title="'.__('Close','fixed-bar').'">x</button>
+							</div>
+							';
+						}
+						echo '<div id="az-flex" class="az-flex-'.$position.'">';		
 								dynamic_sidebar('sidebar-fixed');
-					echo '</div>
-						  </div>';
+					echo '	  </div>								
+						 </div>
+						  <button id="az-open" class="dashicons-before dashicons-layout" title="'.get_option('az_fixedbar_open_button_title').'" style="display:none;"> </button>
+						  ';
 				}	
 				add_action("wp_footer", "az_add_fixedbar_to_footer", 1);
 			/**-------------------------------------------------------------------------**/ 
@@ -212,12 +291,10 @@ Version: 1.1
 		}
 		add_action( 'wp_enqueue_scripts', 'add_fixed_style' );
 		
-		$frontpage = get_option('az_fixedbar_frontpage');
+		//Управление видимостью Fixed-bar на выбранных страницах
 		
-		if ( !$frontpage ){
-				if( is_front_page() ){
-					remove_action( 'wp_enqueue_scripts', 'add_fixed_style' );
-				} 
+		if ( !get_option('az_fixedbar_frontpage') ){
+			if( is_front_page() ) remove_action( 'wp_enqueue_scripts', 'add_fixed_style' );
 		} 
 		
 		$pageID_inc = get_option('az_fixedbar_pageID_inc');		
@@ -235,10 +312,7 @@ Version: 1.1
 					remove_action( 'wp_enqueue_scripts', 'add_fixed_style' );
 				}
 			}
-		}
-		
-		
-		
+		}		
 		
 	}	
 	add_action( 'wp', 'add_select_page' );
