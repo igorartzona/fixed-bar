@@ -22,6 +22,8 @@ Also you can specify page IDs, where fixed bar to be on|off state.
 
 == Changelog ==
 
+= 2.3.3=
+
 = 2.3 =
 * Responsive tab in admin area added (artzona style)
 * Select fontsize and fixedbar added
